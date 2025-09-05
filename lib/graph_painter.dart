@@ -13,54 +13,74 @@ class GraphPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey.shade400
-      ..strokeWidth = 2.0
-      ..style = PaintingStyle.stroke;
-
-    _drawConnections(canvas, rootNode, paint);
+    _drawConnections(canvas, rootNode, 0);
   }
 
-  void _drawConnections(Canvas canvas, GraphNode node, Paint paint) {
+  void _drawConnections(Canvas canvas, GraphNode node, int level) {
     final nodePos = nodePositions[node.id];
     if (nodePos == null) return;
 
     for (var child in node.children) {
       final childPos = nodePositions[child.id];
       if (childPos != null) {
-        // Draw curved line from parent to child
-        final path = Path();
-        path.moveTo(nodePos.dx, nodePos.dy);
-        
-        // Create a curved path
-        final controlPoint1 = Offset(
-          nodePos.dx + (childPos.dx - nodePos.dx) * 0.5,
-          nodePos.dy + 20,
-        );
-        final controlPoint2 = Offset(
-          nodePos.dx + (childPos.dx - nodePos.dx) * 0.5,
-          childPos.dy - 20,
-        );
-        
-        path.cubicTo(
-          controlPoint1.dx, controlPoint1.dy,
-          controlPoint2.dx, controlPoint2.dy,
-          childPos.dx, childPos.dy,
-        );
-        
-        canvas.drawPath(path, paint);
-        
-        // Draw arrow at the end
-        _drawArrow(canvas, controlPoint2, childPos, paint);
+        _drawGradientConnection(canvas, nodePos, childPos, level);
         
         // Recursively draw connections for children
-        _drawConnections(canvas, child, paint);
+        _drawConnections(canvas, child, level + 1);
       }
     }
   }
 
-  void _drawArrow(Canvas canvas, Offset start, Offset end, Paint paint) {
-    const arrowLength = 8.0;
+  void _drawGradientConnection(Canvas canvas, Offset start, Offset end, int level) {
+    // Professional corporate colors for connections
+    final colors = [
+      [const Color(0xFF6366F1), const Color(0xFF4F46E5)], // Indigo
+      [const Color(0xFF10B981), const Color(0xFF059669)], // Emerald
+      [const Color(0xFFF59E0B), const Color(0xFFD97706)], // Amber
+      [const Color(0xFFEF4444), const Color(0xFFDC2626)], // Red
+      [const Color(0xFF8B5CF6), const Color(0xFF7C3AED)], // Violet
+    ];
+    
+    final colorPair = colors[level % colors.length];
+    
+    // Create curved path
+    final path = Path();
+    path.moveTo(start.dx, start.dy);
+    
+    final controlPoint1 = Offset(
+      start.dx + (end.dx - start.dx) * 0.5,
+      start.dy + 25,
+    );
+    final controlPoint2 = Offset(
+      start.dx + (end.dx - start.dx) * 0.5,
+      end.dy - 25,
+    );
+    
+    path.cubicTo(
+      controlPoint1.dx, controlPoint1.dy,
+      controlPoint2.dx, controlPoint2.dy,
+      end.dx, end.dy,
+    );
+    
+    // Create gradient paint
+    final paint = Paint()
+      ..shader = LinearGradient(
+        colors: colorPair,
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(Rect.fromPoints(start, end))
+      ..strokeWidth = 3.0
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    
+    canvas.drawPath(path, paint);
+    
+    // Draw arrow at the end
+    _drawGradientArrow(canvas, controlPoint2, end, colorPair[1]);
+  }
+
+  void _drawGradientArrow(Canvas canvas, Offset start, Offset end, Color color) {
+    const arrowLength = 10.0;
     const arrowAngle = 0.5;
     
     final direction = (end - start).direction;
@@ -74,8 +94,7 @@ class GraphPainter extends CustomPainter {
     );
     
     final arrowPaint = Paint()
-      ..color = paint.color
-      ..strokeWidth = paint.strokeWidth
+      ..color = color
       ..style = PaintingStyle.fill;
     
     final arrowPath = Path()
