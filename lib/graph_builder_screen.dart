@@ -35,9 +35,11 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
     ));
     _animationController.forward();
     
-    // Delay the calculation to ensure context is available
+    // Calculate initial positions immediately
+    _calculateNodePositions();
+    
+    // Delay the centering to ensure context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _calculateNodePositions();
       _centerOnRootNode();
     });
   }
@@ -50,18 +52,23 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
   }
 
   void _centerOnRootNode() {
-    if (nodePositions.isNotEmpty) {
+    if (nodePositions.isNotEmpty && mounted) {
       final rootPos = nodePositions[graphManager.rootNode.id];
       if (rootPos != null) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final screenHeight = MediaQuery.of(context).size.height;
-        
-        // Calculate the offset to center the root node
-        final translateX = screenWidth / 2 - rootPos.dx;
-        final translateY = screenHeight / 4 - rootPos.dy;
-        
-        _transformationController.value = Matrix4.identity()
-          ..translate(translateX, translateY);
+        try {
+          final screenWidth = MediaQuery.of(context).size.width;
+          final screenHeight = MediaQuery.of(context).size.height;
+          
+          // Calculate the offset to center the root node
+          final translateX = screenWidth / 2 - rootPos.dx;
+          final translateY = screenHeight / 4 - rootPos.dy;
+          
+          _transformationController.value = Matrix4.identity()
+            ..translate(translateX, translateY);
+        } catch (e) {
+          // If MediaQuery fails, don't center
+          print('Could not center view: $e');
+        }
       }
     }
   }
@@ -69,6 +76,11 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
   void _calculateNodePositions() {
     nodePositions.clear();
     _positionNodesBFS();
+    
+    // Ensure root node is always positioned
+    if (!nodePositions.containsKey(graphManager.rootNode.id)) {
+      nodePositions[graphManager.rootNode.id] = const Offset(400.0, 150.0);
+    }
   }
 
   void _positionNodesBFS() {
@@ -76,9 +88,16 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
     const double nodeSpacing = 120.0;
     const double startY = 150.0;
     
-    // Center the root node on the screen
-    final screenWidth = MediaQuery.of(context).size.width;
-    final startX = screenWidth;
+    // Use a safe default for initial positioning
+    double startX = 400.0; // Default center position
+    
+    // Try to get screen width if context is available
+    try {
+      final screenWidth = MediaQuery.of(context).size.width;
+      startX = screenWidth / 2;
+    } catch (e) {
+      // Use default if MediaQuery is not available yet
+    }
     
     // Use breadth-first search to position nodes level by level
     Map<int, List<GraphNode>> levelNodes = {};
