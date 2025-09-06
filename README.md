@@ -169,7 +169,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 **Made with ❤️ using Flutter**
 
 </div>
-└── graph_painter.dart       # Custom painter for connections
 ```
 
 ## Getting Started
