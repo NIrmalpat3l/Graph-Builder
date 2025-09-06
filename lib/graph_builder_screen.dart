@@ -188,10 +188,27 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
   }
 
   void _addNode() {
+    if (!graphManager.canAddChildToSelected()) {
+      // Show error message when depth limit reached
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Maximum depth of 100 levels reached!'),
+          backgroundColor: Color(0xFFEF4444),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     GraphNode? newNode;
     setState(() {
-      newNode = graphManager.addChildToSelected();
-      _calculateNodePositions();
+      try {
+        newNode = graphManager.addChildToSelected();
+        _calculateNodePositions();
+      } catch (e) {
+        // Handle depth limit exception
+        return;
+      }
     });
     
     _animationController.reset();
@@ -222,6 +239,21 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
         // If MediaQuery fails, don't focus
         print('Could not focus on node: $e');
       }
+    }
+  }
+
+  void _goToParent() {
+    final selectedNode = graphManager.selectedNode;
+    if (selectedNode != null && selectedNode.parent != null) {
+      setState(() {
+        // Deselect current node
+        selectedNode.isSelected = false;
+        // Select and focus on parent
+        selectedNode.parent!.isSelected = true;
+        graphManager.selectedNode = selectedNode.parent;
+      });
+      // Focus the view on the parent node
+      _focusOnNode(selectedNode.parent!);
     }
   }
 
@@ -317,6 +349,34 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
                       ),
                     ),
                   ),
+                  // Child count indicator
+                  if (node.children.isNotEmpty)
+                    Positioned(
+                      bottom: 5,
+                      left: 25,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF10B981),
+                          border: Border.all(
+                            color: const Color(0xFF1F2937),
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${node.children.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   // Professional delete button - now positioned within the larger container
                   if (node != graphManager.rootNode)
                     Positioned(
@@ -408,6 +468,114 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
     );
   }
 
+  Widget _buildBottomControlPanel() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(left: 4, right: 4, bottom: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F2937),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+        border: Border.all(
+          color: const Color(0xFF374151),
+          width: 2,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFF000000),
+            blurRadius: 8,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildControlButton(
+            icon: Icons.add,
+            label: 'Add Node',
+            color: graphManager.canAddChildToSelected() 
+                ? const Color(0xFF10B981)
+                : const Color(0xFF374151),
+            onPressed: graphManager.canAddChildToSelected() ? _addNode : null,
+          ),
+          _buildControlButton(
+            icon: Icons.arrow_upward,
+            label: 'Go to Parent',
+            color: (graphManager.selectedNode != null && graphManager.selectedNode!.parent != null)
+                ? const Color(0xFFEAB308)
+                : const Color(0xFF374151),
+            onPressed: (graphManager.selectedNode != null && graphManager.selectedNode!.parent != null) 
+                ? _goToParent 
+                : null,
+          ),
+          _buildControlButton(
+            icon: Icons.center_focus_strong,
+            label: 'Center View',
+            color: const Color(0xFF6366F1),
+            onPressed: _centerOnRootNode,
+          ),
+          _buildControlButton(
+            icon: Icons.refresh,
+            label: 'Reset Graph',
+            color: const Color(0xFFEF4444),
+            onPressed: _resetGraph,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback? onPressed,
+  }) {
+    final isEnabled = onPressed != null;
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isEnabled ? color : const Color(0xFF374151),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isEnabled ? color.withOpacity(0.3) : const Color(0xFF4B5563),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: isEnabled ? Colors.white : const Color(0xFF6B7280),
+                size: 24,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isEnabled ? Colors.white : const Color(0xFF6B7280),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   List<Widget> _buildAllNodes(GraphNode node) {
     List<Widget> widgets = [_buildNodeWidget(node)];
     for (var child in node.children) {
@@ -486,7 +654,7 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
                   const Color(0xFF6366F1),
                 ),
                 _buildProfessionalInfoCard(
-                  '${graphManager.getMaxDepth()}',
+                  graphManager.getMaxDepthFormatted(),
                   'Depth Level',
                   Icons.layers_outlined,
                   const Color(0xFF10B981),
@@ -504,10 +672,13 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
           Expanded(
             child: Container(
               width: double.infinity,
-              margin: const EdgeInsets.all(4), // Small margin for visual separation
+              margin: const EdgeInsets.only(left: 4, right: 4, top: 4), // No bottom margin for bottom panel
               decoration: BoxDecoration(
                 color: const Color(0xFF0F172A), // Darker canvas background
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
                 border: Border.all(
                   color: const Color(0xFF374151),
                   width: 2,
@@ -521,7 +692,10 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Clip content to border radius
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
                 child: InteractiveViewer(
                   transformationController: _transformationController,
                   boundaryMargin: EdgeInsets.zero,
@@ -554,45 +728,8 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
               ),
             ),
           ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // Professional Add Node Button
-          FloatingActionButton(
-            onPressed: graphManager.selectedNode != null ? _addNode : null,
-            backgroundColor: graphManager.selectedNode != null 
-                ? const Color(0xFF10B981)
-                : const Color(0xFF374151),
-            foregroundColor: graphManager.selectedNode != null 
-                ? Colors.white 
-                : const Color(0xFF6B7280),
-            elevation: graphManager.selectedNode != null ? 6 : 2,
-            heroTag: 'add',
-            child: const Icon(Icons.add, size: 28),
-          ),
-          const SizedBox(height: 16),
-          // Professional Center View Button
-          FloatingActionButton(
-            onPressed: _centerOnRootNode,
-            backgroundColor: const Color(0xFF6366F1),
-            foregroundColor: Colors.white,
-            elevation: 6,
-            heroTag: 'center',
-            tooltip: 'Center on Root Node',
-            child: const Icon(Icons.center_focus_strong, size: 28),
-          ),
-          const SizedBox(height: 16),
-          // Professional Reset Button
-          FloatingActionButton(
-            onPressed: _resetGraph,
-            backgroundColor: const Color(0xFFEF4444),
-            foregroundColor: Colors.white,
-            elevation: 6,
-            heroTag: 'reset',
-            child: const Icon(Icons.refresh, size: 28),
-          ),
+          // Bottom control panel
+          _buildBottomControlPanel(),
         ],
       ),
     );
