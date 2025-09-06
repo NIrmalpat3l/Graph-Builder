@@ -1,147 +1,174 @@
-# Graph Builder
+# 🌳 Graph Builder
 
-A professional Flutter application for creating and managing interactive tree-like graph structures with nodes.
+> A professional Flutter application for creating and managing interactive tree-like graph structures
+
+<div align="center">
 
 ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-## 🚀 Features
+</div>
 
-### Core Functionality
-- **📝 Interactive Node Creation**: Click to select nodes and add children with auto-incrementing numbers
-- **🗑️ Smart Node Management**: Delete any node (except root) with cascade deletion of children
-- **🌳 Visual Hierarchy**: Clean tree structure with curved connecting lines and arrows
-- **🎯 Auto-Navigation**: Automatic view centering and parent navigation
-- **📊 Depth Management**: Maximum 100 levels with validation and visual feedback
+---
 
-### Professional Design
-- **🎨 Corporate Dark Theme**: Modern dark UI with professional color palette (#0F172A background)
-- **📱 Material Design 3**: Latest Material Design principles for consistency
-- **✨ Smooth Animations**: Subtle scale animations for enhanced user experience
-- **📐 Responsive Layout**: Adapts to different screen sizes with unlimited canvas (20,000px)
+## ✨ Features
 
-### Advanced Features
-- **🔢 Child Count Indicators**: Visual badges showing number of children for each node
-- **🎛️ Bottom Control Panel**: Professional control buttons with clear labels
-- **⬆️ Parent Navigation**: Quick navigation to parent nodes with "Go to Parent" button
-- **🎯 Smart Focus**: Intelligent view focusing with manual control override
-- **📏 Depth Restrictions**: Built-in validation preventing trees deeper than 100 levels
+<table>
+<tr>
+<td width="50%">
+
+### 🎯 Core Features
+- 📝 **Interactive Node Creation** - Click to select and add child nodes
+- 🗑️ **Smart Node Management** - Delete nodes with cascade deletion
+- 🌳 **Visual Hierarchy** - Clean tree structure with connecting lines
+- 🎯 **Auto-Navigation** - Parent navigation and auto-centering
+- 📊 **Depth Control** - Maximum 100 levels with validation
+
+</td>
+<td width="50%">
+
+### 🎨 Professional Design
+- � **Corporate Dark Theme** - Modern professional interface
+- 📱 **Material Design 3** - Latest design principles
+- ✨ **Smooth Animations** - Enhanced user experience
+- 📐 **Unlimited Canvas** - 20,000×20,000px scrollable area
+- 🔢 **Visual Indicators** - Child count badges and selection highlights
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+```bash
+Flutter SDK 3.0+
+Dart SDK 3.0+
+```
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/NIrmalpat3l/Graph-Builder.git
+cd Graph-Builder
+
+# Install dependencies
+flutter pub get
+
+# Run the application
+flutter run
+```
+
+### Platform Support
+| Platform | Status |
+|----------|--------|
+| 🖥️ Windows | ✅ Supported |
+| � Web | ✅ Supported |
+| 📱 Android | ✅ Supported |
+| 🍎 iOS | ✅ Supported |
+| �️ macOS | ✅ Supported |
+| 🐧 Linux | ✅ Supported |
+
+---
 
 ## 🎮 How to Use
 
-### Adding Nodes
-1. **Select a Node**: Tap any node to select it (highlighted in blue)
-2. **Add Child**: Click "Add Node" button in the bottom panel
-3. **Auto-Numbering**: New nodes are automatically numbered sequentially
+### 1. Adding Nodes
+- **Select a Node**: Tap any node (highlighted in blue)
+- **Add Child**: Click "Add Node" in bottom panel
+- **Auto-Numbering**: Sequential numbering automatically applied
 
-### Navigation
-- **Go to Parent**: Use the yellow "Go to Parent" button to navigate up the tree
-- **Center View**: Blue "Center View" button centers on the root node
-- **Manual Navigation**: Pan and scroll to explore large graphs
+### 2. Navigation Controls
+| Button | Function | Color |
+|--------|----------|-------|
+| ➕ Add Node | Creates child node | 🟢 Green |
+| ⬆️ Go to Parent | Navigate to parent | 🟡 Yellow |
+| 🎯 Center View | Focus on root | 🔵 Blue |
+| 🔄 Reset Graph | Clear all nodes | 🔴 Red |
 
-### Node Management
-- **Delete Nodes**: Click the red "×" button on any node (except root)
-- **Reset Graph**: Red "Reset Graph" button resets to initial state
-- **View Info**: Info panel shows current depth, total nodes, and selection
+### 3. Node Management
+- **Delete**: Click red "×" button (cascades to children)
+- **Select**: Tap any node to highlight and select
+- **Navigate**: Use scroll/pan for large graphs
 
-## 🛠️ Technical Architecture
+---
 
-### Project Structure
+
+</div>
+
+### 📁 Project Structure
 ```
 lib/
-├── main.dart                 # App entry point and Material 3 theme
-├── graph_builder_screen.dart # Main UI, interactions, and animations
-├── graph_manager.dart        # Business logic and depth validation
-├── graph_node.dart          # Node data model with parent-child relationships
-└── graph_painter.dart       # Custom painter for curved connection lines
+├── 🚀 main.dart                 # App entry point & Material 3 theme
+├── 🖥️ graph_builder_screen.dart # Main UI & interactions
+├── 🧠 graph_manager.dart        # Business logic & validation
+├── 📊 graph_node.dart          # Node data model
+└── 🎨 graph_painter.dart       # Connection line renderer
 ```
 
-### Key Components
-- **GraphManager**: Handles node CRUD operations with depth validation
-- **GraphNode**: Immutable node model with hierarchical relationships
-- **GraphPainter**: Custom painter for professional connection rendering
-- **Hierarchical Positioning**: Algorithm preventing node overlaps
-- **Unlimited Canvas**: 20,000×20,000px scrollable area with hard clipping
+### 🔧 Key Components
+| Component | Responsibility |
+|-----------|----------------|
+| **GraphManager** | Node CRUD operations & depth validation |
+| **GraphNode** | Immutable node model with relationships |
+| **GraphPainter** | Custom painter for curved connections |
+| **Positioning Algorithm** | Prevents node overlaps |
+| **Unlimited Canvas** | 20K×20K scrollable area |
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Flutter SDK (3.0+)
-- Dart SDK (3.0+)
-- Any Flutter-supported platform (Windows, macOS, Linux, Web, Mobile)
-
-### Installation
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/NIrmalpat3l/Graph-Builder.git
-   cd Graph-Builder
-   ```
-
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the application**
-   ```bash
-   flutter run
-   ```
-
-### Platform Support
-- ✅ Windows Desktop
-- ✅ Web (Chrome, Firefox, Edge)
-- ✅ Android
-- ✅ iOS
-- ✅ macOS
-- ✅ Linux
+---
 
 ## 🎨 Design System
 
 ### Color Palette
-- **Background**: `#0F172A` (Dark slate)
-- **Panels**: `#1F2937` (Gray-800)
-- **Primary**: `#6366F1` (Indigo-500)
-- **Success**: `#10B981` (Emerald-500)
-- **Warning**: `#EAB308` (Yellow-500)
-- **Danger**: `#EF4444` (Red-500)
+```css
+Background: #0F172A  /* Dark slate */
+Panels:     #1F2937  /* Gray-800 */
+Primary:    #6366F1  /* Indigo-500 */
+Success:    #10B981  /* Emerald-500 */
+Warning:    #EAB308  /* Yellow-500 */
+Danger:     #EF4444  /* Red-500 */
+```
 
-### UI Components
-- **Nodes**: 60px circular containers with depth-based shadows
-- **Connections**: Curved lines with directional arrows
-- **Controls**: Bottom panel with labeled professional buttons
-- **Indicators**: Child count badges and selection highlights
+### UI Specifications
+- **Node Size**: 60px circular containers
+- **Animations**: Elastic scale transitions
+- **Typography**: Material Design 3 text styles
+- **Shadows**: Depth-based elevation system
 
-## 📱 Screenshots
-
-*Add screenshots of your app here showing the graph interface, node management, and control panel*
+---
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+We welcome contributions! Please follow these steps:
+
+1. **Fork** the repository
+2. **Create** feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** changes (`git commit -m 'Add AmazingFeature'`)
+4. **Push** to branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-## 👤 Author
+---
 
-**Nirmal Patel**
-- GitHub: [@NIrmalpat3l](https://github.com/NIrmalpat3l)
+<div align="center">
 
-## 🙏 Acknowledgments
-
-- Flutter team for the amazing framework
-- Material Design team for the design system
-- Community contributors and feedback
+### 👤 Author
+**Nirmal Patel**  
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/NIrmalpat3l)
 
 ---
 
 **Made with ❤️ using Flutter**
+
+</div>
 └── graph_painter.dart       # Custom painter for connections
 ```
 
