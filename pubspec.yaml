@@ -1,5 +1,7 @@
 name: graph_builder
-description: A Flutter app for creating and navigating tree-like graphs
+description: A professional Flutter application for creating and managing interactive tree-like graph structures with nodes.
+repository: https://github.com/NIrmalpat3l/Graph-Builder
+homepage: https://github.com/NIrmalpat3l/Graph-Builder
 
 publish_to: 'none'
 

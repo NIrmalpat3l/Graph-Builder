@@ -1,53 +1,147 @@
 # Graph Builder
 
-A Flutter app for creating and navigating tree-like graphs of nodes with an intuitive UI.
+A professional Flutter application for creating and managing interactive tree-like graph structures with nodes.
 
-## Features
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-- **Root Node**: App starts with a single root node labeled "1"
-- **Add Nodes**: Add child nodes to the currently selected node with incrementing numbers
-- **Node Selection**: Tap any node to select it (highlighted in blue)
-- **Node Deletion**: Delete nodes with a red X button (deletes all child nodes recursively)
-- **Visual Hierarchy**: Clear tree visualization with curved connecting lines and arrows
-- **Smooth Animations**: Elastic animations when adding new nodes
-- **Information Panel**: Shows total nodes, max depth, and currently selected node
-- **Scrollable Canvas**: Pan and scroll to navigate large graphs
-- **Reset Function**: Reset the entire graph back to the initial state
+## 🚀 Features
 
-## How to Use
+### Core Functionality
+- **📝 Interactive Node Creation**: Click to select nodes and add children with auto-incrementing numbers
+- **🗑️ Smart Node Management**: Delete any node (except root) with cascade deletion of children
+- **🌳 Visual Hierarchy**: Clean tree structure with curved connecting lines and arrows
+- **🎯 Auto-Navigation**: Automatic view centering and parent navigation
+- **📊 Depth Management**: Maximum 100 levels with validation and visual feedback
 
-1. **Adding Nodes**: 
-   - Select a node by tapping on it (it will turn blue)
-   - Press the green "+" floating action button to add a child node
-   - New nodes are automatically numbered sequentially
+### Professional Design
+- **🎨 Corporate Dark Theme**: Modern dark UI with professional color palette (#0F172A background)
+- **📱 Material Design 3**: Latest Material Design principles for consistency
+- **✨ Smooth Animations**: Subtle scale animations for enhanced user experience
+- **📐 Responsive Layout**: Adapts to different screen sizes with unlimited canvas (20,000px)
 
-2. **Deleting Nodes**:
-   - Tap the red X button on any node (except root) to delete it
-   - Deleting a node removes all its children recursively
-   - The root node cannot be deleted directly
+### Advanced Features
+- **🔢 Child Count Indicators**: Visual badges showing number of children for each node
+- **🎛️ Bottom Control Panel**: Professional control buttons with clear labels
+- **⬆️ Parent Navigation**: Quick navigation to parent nodes with "Go to Parent" button
+- **🎯 Smart Focus**: Intelligent view focusing with manual control override
+- **📏 Depth Restrictions**: Built-in validation preventing trees deeper than 100 levels
 
-3. **Navigation**:
-   - Scroll horizontally and vertically to navigate large graphs
-   - The canvas expands as needed to accommodate growing trees
+## 🎮 How to Use
 
-4. **Reset**:
-   - Press the red refresh button to reset the entire graph
+### Adding Nodes
+1. **Select a Node**: Tap any node to select it (highlighted in blue)
+2. **Add Child**: Click "Add Node" button in the bottom panel
+3. **Auto-Numbering**: New nodes are automatically numbered sequentially
 
-## Technical Details
+### Navigation
+- **Go to Parent**: Use the yellow "Go to Parent" button to navigate up the tree
+- **Center View**: Blue "Center View" button centers on the root node
+- **Manual Navigation**: Pan and scroll to explore large graphs
 
-- **Maximum Depth**: Supports up to 100 levels of nodes
-- **Responsive UI**: Adapts to different screen sizes
-- **Performance**: Efficient rendering and memory management
-- **Smooth UX**: Animated transitions and intuitive controls
+### Node Management
+- **Delete Nodes**: Click the red "×" button on any node (except root)
+- **Reset Graph**: Red "Reset Graph" button resets to initial state
+- **View Info**: Info panel shows current depth, total nodes, and selection
 
-## Project Structure
+## 🛠️ Technical Architecture
 
+### Project Structure
 ```
 lib/
-├── main.dart                 # App entry point
-├── graph_builder_screen.dart # Main UI screen
-├── graph_manager.dart        # Business logic for graph operations
-├── graph_node.dart          # Node data model
+├── main.dart                 # App entry point and Material 3 theme
+├── graph_builder_screen.dart # Main UI, interactions, and animations
+├── graph_manager.dart        # Business logic and depth validation
+├── graph_node.dart          # Node data model with parent-child relationships
+└── graph_painter.dart       # Custom painter for curved connection lines
+```
+
+### Key Components
+- **GraphManager**: Handles node CRUD operations with depth validation
+- **GraphNode**: Immutable node model with hierarchical relationships
+- **GraphPainter**: Custom painter for professional connection rendering
+- **Hierarchical Positioning**: Algorithm preventing node overlaps
+- **Unlimited Canvas**: 20,000×20,000px scrollable area with hard clipping
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter SDK (3.0+)
+- Dart SDK (3.0+)
+- Any Flutter-supported platform (Windows, macOS, Linux, Web, Mobile)
+
+### Installation
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/NIrmalpat3l/Graph-Builder.git
+   cd Graph-Builder
+   ```
+
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Run the application**
+   ```bash
+   flutter run
+   ```
+
+### Platform Support
+- ✅ Windows Desktop
+- ✅ Web (Chrome, Firefox, Edge)
+- ✅ Android
+- ✅ iOS
+- ✅ macOS
+- ✅ Linux
+
+## 🎨 Design System
+
+### Color Palette
+- **Background**: `#0F172A` (Dark slate)
+- **Panels**: `#1F2937` (Gray-800)
+- **Primary**: `#6366F1` (Indigo-500)
+- **Success**: `#10B981` (Emerald-500)
+- **Warning**: `#EAB308` (Yellow-500)
+- **Danger**: `#EF4444` (Red-500)
+
+### UI Components
+- **Nodes**: 60px circular containers with depth-based shadows
+- **Connections**: Curved lines with directional arrows
+- **Controls**: Bottom panel with labeled professional buttons
+- **Indicators**: Child count badges and selection highlights
+
+## 📱 Screenshots
+
+*Add screenshots of your app here showing the graph interface, node management, and control panel*
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+**Nirmal Patel**
+- GitHub: [@NIrmalpat3l](https://github.com/NIrmalpat3l)
+
+## 🙏 Acknowledgments
+
+- Flutter team for the amazing framework
+- Material Design team for the design system
+- Community contributors and feedback
+
+---
+
+**Made with ❤️ using Flutter**
 └── graph_painter.dart       # Custom painter for connections
 ```
 
