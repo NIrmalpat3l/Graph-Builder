@@ -188,18 +188,41 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
   }
 
   void _addNode() {
+    GraphNode? newNode;
     setState(() {
-      graphManager.addChildToSelected();
+      newNode = graphManager.addChildToSelected();
       _calculateNodePositions();
     });
     
     _animationController.reset();
     _animationController.forward();
     
-    // Auto-center view after adding node
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _centerOnRootNode();
-    });
+    // Focus on the newly added node instead of centering on root
+    if (newNode != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _focusOnNode(newNode!);
+      });
+    }
+  }
+
+  void _focusOnNode(GraphNode node) {
+    final nodePosition = nodePositions[node.id];
+    if (nodePosition != null && mounted) {
+      try {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+        
+        // Calculate the offset to center the specific node on screen
+        final translateX = screenWidth / 2 - nodePosition.dx;
+        final translateY = screenHeight / 3 - nodePosition.dy;
+        
+        _transformationController.value = Matrix4.identity()
+          ..translate(translateX, translateY);
+      } catch (e) {
+        // If MediaQuery fails, don't focus
+        print('Could not focus on node: $e');
+      }
+    }
   }
 
   void _deleteNode(GraphNode node) {
@@ -208,10 +231,7 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
       _calculateNodePositions();
     });
     
-    // Auto-center view after deleting node
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _centerOnRootNode();
-    });
+    // Don't auto-center after deleting - let user manually center if needed
   }
 
   void _selectNode(GraphNode node) {
@@ -341,14 +361,21 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
 
   Widget _buildProfessionalInfoCard(String value, String label, IconData icon, Color accentColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
         color: const Color(0xFF374151),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: const Color(0xFF4B5563),
           width: 1,
         ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFF000000),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -356,22 +383,22 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
           Icon(
             icon,
             color: accentColor,
-            size: 24,
+            size: 22,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.w700,
               color: Color(0xFFE5E7EB),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
           Text(
             label,
             style: const TextStyle(
-              fontSize: 12,
+              fontSize: 11,
               color: Color(0xFF9CA3AF),
               fontWeight: FontWeight.w500,
             ),
@@ -392,7 +419,7 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF111827),
+      backgroundColor: const Color(0xFF0F172A), // Even darker background for better separation
       appBar: AppBar(
         toolbarHeight: 48, // Make AppBar smaller
         title: Row(
@@ -423,23 +450,31 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
           ],
         ),
         backgroundColor: const Color(0xFF1F2937),
-        elevation: 0,
+        elevation: 4, // Add elevation for separation
+        shadowColor: const Color(0xFF000000),
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: Column(
         children: [
-          // Professional Info panel
+          // Professional Info panel - Fixed header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             decoration: const BoxDecoration(
               color: Color(0xFF1F2937),
               border: Border(
                 bottom: BorderSide(
                   color: Color(0xFF374151),
-                  width: 1,
+                  width: 2,
                 ),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0xFF000000),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -465,38 +500,55 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
               ],
             ),
           ),
-          // Enhanced Graph area
+          // Canvas area - Clearly separated and contained
           Expanded(
             child: Container(
               width: double.infinity,
-              color: const Color(0xFF111827), // Professional dark background
-              child: InteractiveViewer(
-                transformationController: _transformationController,
-                boundaryMargin: EdgeInsets.zero,
-                minScale: 0.1,
-                maxScale: 3.0,
-                constrained: false,
-                panEnabled: true,
-                scaleEnabled: true,
-                clipBehavior: Clip.none,
-                // Create unlimited canvas by making it extremely large
-                child: SizedBox(
-                  width: 20000, // Very large fixed width for unlimited scrolling
-                  height: 20000, // Very large fixed height for unlimited scrolling
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // Draw connections
-                      CustomPaint(
-                        size: const Size(20000, 20000), // Match the large canvas size
-                        painter: GraphPainter(
-                          nodePositions: nodePositions,
-                          rootNode: graphManager.rootNode,
+              margin: const EdgeInsets.all(4), // Small margin for visual separation
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F172A), // Darker canvas background
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFF374151),
+                  width: 2,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xFF000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10), // Clip content to border radius
+                child: InteractiveViewer(
+                  transformationController: _transformationController,
+                  boundaryMargin: EdgeInsets.zero,
+                  minScale: 0.1,
+                  maxScale: 3.0,
+                  constrained: false,
+                  panEnabled: true,
+                  scaleEnabled: true,
+                  clipBehavior: Clip.hardEdge, // Restrict graph to canvas only
+                  child: SizedBox(
+                    width: 20000, // Very large fixed width for unlimited scrolling
+                    height: 20000, // Very large fixed height for unlimited scrolling
+                    child: Stack(
+                      clipBehavior: Clip.hardEdge, // Prevent overflow outside canvas
+                      children: [
+                        // Draw connections
+                        CustomPaint(
+                          size: const Size(20000, 20000), // Match the large canvas size
+                          painter: GraphPainter(
+                            nodePositions: nodePositions,
+                            rootNode: graphManager.rootNode,
+                          ),
                         ),
-                      ),
-                      // Draw nodes
-                      ..._buildAllNodes(graphManager.rootNode),
-                    ],
+                        // Draw nodes
+                        ..._buildAllNodes(graphManager.rootNode),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -528,6 +580,7 @@ class _GraphBuilderScreenState extends State<GraphBuilderScreen>
             foregroundColor: Colors.white,
             elevation: 6,
             heroTag: 'center',
+            tooltip: 'Center on Root Node',
             child: const Icon(Icons.center_focus_strong, size: 28),
           ),
           const SizedBox(height: 16),
